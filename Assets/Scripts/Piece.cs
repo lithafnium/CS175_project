@@ -95,7 +95,6 @@ public class Piece : MonoBehaviour
             rotateTetromino(90);
         } else if (Input.GetKeyDown(KeyCode.DownArrow) || Time.time - lastFall >= 1) {                
             transform.localPosition += new Vector3(0, -1, 0);
-            Debug.Log(isGamePiece);
             if (checkBoardPosition()) {
                 // Debug.Log("CALLING UPDATE"); 
                 movePiece();
