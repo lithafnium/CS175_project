@@ -7,6 +7,7 @@ public class Piece : MonoBehaviour
     public GameObject tb; 
     float lastFall = 0;
     public bool isGamePiece; 
+    public int id; 
 
     public Vector2 roundPosition(Vector2 pos) {
         return new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
@@ -104,7 +105,7 @@ public class Piece : MonoBehaviour
                 TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
                 board.updateGrid(); 
 
-                board.spawnTetrominoe(false);
+                board.spawnTetrominoe(false, null, -1, true);
                 enabled = false; 
             }
 
