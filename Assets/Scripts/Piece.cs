@@ -9,6 +9,10 @@ public class Piece : MonoBehaviour
     public bool isGamePiece; 
     public int id; 
 
+    public float arr;  // 1 second
+    public float das; 
+    public float timePassed;
+    public float totalTimePassed; 
     public Vector2 roundPosition(Vector2 pos) {
         return new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
     }
@@ -78,23 +82,46 @@ public class Piece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        this.arr = 0.025f; 
+        this.das = 0.25f; 
+        this.timePassed = 0f; 
+        this.totalTimePassed = 0f; 
         this.tb = GameObject.Find("TetrisBoard");
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        timePassed += Time.deltaTime;
+        totalTimePassed += Time.deltaTime; 
         if (!this.isGamePiece) {
             return; 
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+            totalTimePassed = 0;
             moveTetromino(new Vector3(-1, 0, 0));
-        } else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+        } else if (Input.GetKey(KeyCode.LeftArrow) && timePassed >= arr && totalTimePassed >= das) {
+            moveTetromino(new Vector3(-1, 0, 0));
+            timePassed = 0f;
+        } 
+        
+        if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            totalTimePassed = 0;
+            Debug.Log(Time.deltaTime);
             moveTetromino(new Vector3(1, 0, 0));
-        } else if (Input.GetKeyDown(KeyCode.UpArrow)) {
+        } else if (Input.GetKey(KeyCode.RightArrow) && timePassed >= arr && totalTimePassed >= das) {
+            moveTetromino(new Vector3(1, 0, 0));
+            timePassed = 0f;
+        } 
+        
+        
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
             rotateTetromino(90);
-        } else if (Input.GetKeyDown(KeyCode.DownArrow) || Time.time - lastFall >= 1) {                
+        } 
+        
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Time.time - lastFall >= 1) {  
+            totalTimePassed = 0;
+              
             transform.localPosition += new Vector3(0, -1, 0);
             if (checkBoardPosition()) {
                 // Debug.Log("CALLING UPDATE"); 
@@ -109,8 +136,31 @@ public class Piece : MonoBehaviour
                 enabled = false; 
             }
 
+            lastFall = Time.time;
+        } else if (Input.GetKey(KeyCode.DownArrow) && timePassed >= arr && totalTimePassed >= das) {
+            transform.localPosition += new Vector3(0, -1, 0);
+            if (checkBoardPosition()) {
+                // Debug.Log("CALLING UPDATE"); 
+                movePiece();
+            } else {
+                transform.localPosition += new Vector3(0, 1, 0);
+                
+                TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
+                board.updateGrid(); 
+
+                board.spawnTetrominoe(false, null, -1, true);
+                enabled = false; 
+            }
 
             lastFall = Time.time;
+            timePassed = 0f;
+
+        } 
+
+        if (Input.GetKeyUp(KeyCode.LeftArrow) ||
+            Input.GetKeyUp(KeyCode.RightArrow) ||
+            Input.GetKeyUp(KeyCode.DownArrow)) {
+            totalTimePassed = 0; 
         }
 
     }
