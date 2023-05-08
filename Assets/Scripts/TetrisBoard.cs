@@ -153,12 +153,10 @@ public class TetrisBoard : MonoBehaviour
                 newHold = instantiatePiece(tetrominoes[id], false, new Vector3(-11.5f, 14.5f, 0), id);
             }
 
-            Debug.Log("Holding: " + this.hold); 
             
             if (!isNull) {
                 // we want to swap here
                 var holdObj = this.hold.GetComponent<Piece>(); 
-                Debug.Log("hold id: " + holdObj.id); 
                 Destroy(this.hold); 
                 Destroy(this.current); 
 
