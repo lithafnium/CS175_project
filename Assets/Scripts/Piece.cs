@@ -29,13 +29,17 @@ public class Piece : MonoBehaviour
 
     public bool checkBoardPosition() {
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
+        Debug.Log("CHECKING");
         foreach (Transform child in transform) {
             Vector2 pos = child.position; 
             pos = new Vector2(pos.x + 4.5f, pos.y); 
-            pos = roundPosition(pos); 
+            pos = roundPosition(pos);  
             if (!board.insideGrid(pos) || isOccupied(board, pos)) {
                 return false; 
             }
+
+            Debug.Log("inside grid: " + board.insideGrid(pos)); 
+            Debug.Log("occupied: " + isOccupied(board, pos)); 
         }
 
         return true; 
@@ -43,13 +47,13 @@ public class Piece : MonoBehaviour
 
     public void moveToBottom(){
         // I don't know why this works and a while loop doesn't
-        for(int i=0;i<20;i++){
+        for(int i=0;i<22;i++){
             moveTetromino(new Vector3(0, -1, 0));
         }
     }
     public void movePiece() {
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 22; i++) {
             for (int j = 0; j < 10; j++) {
                 if (isOwned(board, i, j)) {
                     board.grid[i, j] = null; 
@@ -71,7 +75,7 @@ public class Piece : MonoBehaviour
             movePiece();
         } else {
             transform.localPosition += new Vector3(0, 1, 0);
-            
+            movePiece(); 
             Lock();
         }
     }
@@ -98,15 +102,29 @@ public class Piece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         this.arr = 0.025f; 
         this.das = 0.25f; 
         this.timePassed = 0f; 
         this.totalTimePassed = 0f; 
         this.tb = GameObject.Find("TetrisBoard");
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
+        Debug.Log("CHECKING AT START: " + this.id); 
+
+        if (this.isGamePiece){
+            if (!checkBoardPosition()) {
+                Debug.Log("GAME OVER");
+                this.enabled = false;
+                this.isGamePiece = false;
+            }
+        }
+
+ 
     }
 
     void Lock()
     {
+        Debug.Log("LOCKING");
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
         board.updateGrid(); 
 
@@ -157,8 +175,6 @@ public class Piece : MonoBehaviour
             // Move the piece to the bottom of the board
             moveToBottom();
             Lock();
-            
-
         } 
 
         if (Input.GetKeyUp(KeyCode.LeftArrow) ||

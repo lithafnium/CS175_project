@@ -11,11 +11,15 @@ public class TetrisBoard : MonoBehaviour
     public GameObject current; 
 
     public static int w = 10; 
-    public static int h = 20; 
+    public static int h = 22; 
     public Transform[,] grid = new Transform[h, w]; 
 
     public bool insideGrid(Vector2 pos) {
         return pos.y >= 1.0f && pos.x >= 0 && pos.x <= 9;
+    }
+
+    public Vector2 roundPosition(Vector2 pos) {
+        return new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
     }
 
     public void updateGrid() {
@@ -35,18 +39,19 @@ public class TetrisBoard : MonoBehaviour
         int offset = 0;
         for (int i = 0; i < rowsToDestroy.Count; i++) {
             int row = rowsToDestroy[i] - offset; 
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < w; j++) {
+                var parent = grid[row, j].transform.parent.gameObject;
                 Destroy(grid[row, j].gameObject); 
                 grid[row, j] = null; 
             }
 
             // decrase all rows above i 
-            for (int z = row + 1; z < 20; z++) {
-                for(int x = 0; x < 10; x++) {
+            for (int z = row + 1; z < h; z++) {
+                for(int x = 0; x < w; x++) {
                     if (grid[z, x] != null) {
                         grid[z-1, x] = grid[z, x]; 
-                        grid[z, x] = null; 
                         grid[z-1, x].position += new Vector3(0, -1, 0); 
+                        grid[z, x] = null; 
                     }
                 }
             }
@@ -118,7 +123,6 @@ public class TetrisBoard : MonoBehaviour
                 // shiftUpcoming(); 
             }
         }
-        
         Debug.Log("Spawning: " + spawn); 
         this.current = instantiatePiece(spawn, true, new Vector3(-0.5f, 18, 0), id);
         if (drawUpcomingPiece) drawUpcoming(false);
@@ -140,6 +144,14 @@ public class TetrisBoard : MonoBehaviour
             bool isNull = this.hold == null;
 
             GameObject piece = this.current;
+
+            foreach (Transform child in piece.transform) {
+                Vector2 pos = child.position; 
+                pos = new Vector2(pos.x + 4.5f, pos.y); 
+                pos = roundPosition(pos);
+                grid[(int) pos.y, (int) pos.x] = null; 
+            }
+
             GameObject newHold; 
             var pieceObj = piece.GetComponent<Piece>(); 
 

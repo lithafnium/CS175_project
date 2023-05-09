@@ -190,6 +190,12 @@
             then moving all rows above the filled row down by one position,
             shifting each cube down by 1 on the y-axis.
           </p>
+          <h2>Piece Spawning</h2>
+
+          <p>
+            Within <code>TetrisBoard.cs</code>, we have the function
+            <code>spawnTetrominoe()</code> that's
+          </p>
           <h2>Piece Movement</h2>
           <p>
             Within the <code>Update()</code> function of <code>Piece.cs</code>,
@@ -239,38 +245,68 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
             </p>
           </div>
           <h2>Upcoming Pieces</h2>
-          <h2>Piece Spawning</h2>
-          <pre><code class="language-csharp">public void spawnTetrominoe(
-            bool first, 
-            GameObject spawn, 
-            int id, 
-            bool drawUpcomingPiece
-          ) {
-
-  if (spawn == null) {
-      if (first) {
-          var (piece, index) = getRandomPiece(); 
-          spawn = piece; 
-          id = index; 
-      } else {
-          spawn = this.upcoming[0]; 
-          id = this.upcomingIds[0];
-      }
-  }
-
-  Debug.Log("Spawning: " + spawn); 
-  this.current = instantiatePiece(spawn, 
-                                  true, 
-                                  new Vector3(-0.5f, 18, 0), id);
-  if (drawUpcomingPiece) drawUpcoming(false);
-
-}</code></pre>
-
           <p>
-            Within <code>TetrisBoard.cs</code>, we have the function
-            <code>spawnTetrominoe()</code> that's
+            Upcoming pieces are stored in an array of GameObjects, and are
+            updated each time a new piece is spawned. Each piece within the
+            array is then drawn on the right side of the board. When a new piece
+            is spawned, we take the first piece in the array and instantiate
+            that piece to the board. We then translate the rest of the upcoming
+            pieces up the y-axis and then generate a random piece to replace the
+            last slot.
           </p>
+          <div class="captioned-image">
+            <img class="image" src="html_images/upcoming.png" />
+            <p>The board with upcoming pieces on the right</p>
+          </div>
+          <h2>Holding Pieces</h2>
+          <p></p>
           <h1>External Resources</h1>
+          The following resources were used for the creation of this project:
+          <ul>
+            <li>
+              Unity Tutorials: A lot of the learning process came from the Unity
+              beginner tutorials, which helped us navigate the editor, how to
+              draw items on the scene, and how to organize scripts and objects.
+            </li>
+            <li>
+              Tetris Tutorials:
+              <ul>
+                <li>
+                  <a
+                    href="https://ghost-together.medium.com/tetris-turns-35-cfcf04c4f2bb"
+                    >https://ghost-together.medium.com/tetris-turns-35-cfcf04c4f2bb</a
+                  >: Depicts a way to make Tetris in javascript. This tutorial
+                  was used for inspiration on the 2D grid representation
+                </li>
+                <li>
+                  <a href="https://noobtuts.com/unity/2d-tetris-game"
+                    >https://noobtuts.com/unity/2d-tetris-game</a
+                  >: A tutorial on how to make 2D tetris in Unity. We used this
+                  mostly to help us with the object representation (grid of
+                  Transforms) and how to integrate scripts with the pieces and
+                  board.
+                </li>
+                <li>
+                  <a href="https://tetris.wiki/Tetris.wiki"
+                    >https://tetris.wiki/Tetris.wiki</a
+                  >: The Tetris wiki. Mainly to help with piece design,
+                  rotation, and movement.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Other code examples:
+              <ul>
+                <li>
+                  Mouse camera movement:
+                  <a
+                    href="https://gist.github.com/KarlRamstedt/407d50725c7b6abeaf43aee802fdd88e"
+                    >https://gist.github.com/KarlRamstedt/407d50725c7b6abeaf43aee802fdd88e</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
     </main>
