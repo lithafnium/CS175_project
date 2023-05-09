@@ -232,6 +232,14 @@
             implementation results in the following:
           </p>
           <div class="captioned-image">
+            <pre><code class="language-csharp">public float arr;
+public float das; </code></pre>
+            <p class="italics">
+              The lower the ARR the faster the repeat rate. The lower the DAS
+              the higher the delay before repeating.
+            </p>
+          </div>
+          <div class="captioned-image">
             <pre><code class="language-csharp">timePassed += Time.deltaTime;
 totalTimePassed += Time.deltaTime;
 if (Input.GetKey(KeyCode.LeftArrow) && 
@@ -276,7 +284,8 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
                     href="https://ghost-together.medium.com/tetris-turns-35-cfcf04c4f2bb"
                     >https://ghost-together.medium.com/tetris-turns-35-cfcf04c4f2bb</a
                   >: Depicts a way to make Tetris in javascript. This tutorial
-                  was used for inspiration on the 2D grid representation
+                  gave us the inspiration of how to implement movement in a game
+                  enviornment.
                 </li>
                 <li>
                   <a href="https://noobtuts.com/unity/2d-tetris-game"
@@ -284,7 +293,16 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
                   >: A tutorial on how to make 2D tetris in Unity. We used this
                   mostly to help us with the object representation (grid of
                   Transforms) and how to integrate scripts with the pieces and
-                  board.
+                  board. Here are the ideas that we took from this tutorial:
+                  <ul>
+                    <li>
+                      Representing the grid as a 2D array of Transform objects
+                    </li>
+                    <li>
+                      Checking if the piece is in a valid grid position by
+                      checking the parent of the block
+                    </li>
+                  </ul>
                 </li>
                 <li>
                   <a href="https://tetris.wiki/Tetris.wiki"
