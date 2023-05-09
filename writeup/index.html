@@ -36,8 +36,9 @@
             <span class="italics bold">clears</span> the row of blocks, bringing
             every other block above it down a row. If the stack of blocks reach
             the very top, the game ends. Furthermore, as more lines are cleared,
-            the game is sped up. The goal, therefore, is to clear as many rows
-            before the stack reaches the top of the board.
+            the pieces fall at an increasingly faster rate. The goal, therefore,
+            is to clear as many rows before the stack reaches the top of the
+            board.
           </p>
           <h3>Tetrominoes</h3>
           <p>
@@ -84,7 +85,7 @@
               of the four constituent blocks.
             </li>
           </ul>
-          <div class="captaioned-image">
+          <div class="captioned-image">
             <img
               class="image"
               style="width: 40%"
@@ -101,7 +102,7 @@
             the I piece we chose a block close to the center as the rotation
             point.
           </p>
-          <div class="captaioned-image">
+          <div class="captioned-image">
             <img
               class="image"
               style="width: 50%"
@@ -125,14 +126,14 @@
             capabilities. More details will be outlined below.
           </p>
           <h1>Unity Implementation (the fun stuff)</h1>
-          <div class="captaioned-image">
+          <div class="captioned-image">
             <img class="image" style="width: 90%" src="html_images/board.png" />
             <p class="italics">Our beautiful board.</p>
           </div>
           <h2>Board Design</h2>
           <p>
             Board design is fairly simple. In the center we drew a 10x20 grid
-            outlined by 3D cubes. On the top left, we outline a square meant to
+            outlined by 3D cubes. On the top left, we outlined a square meant to
             display the "held" piece (will outline in a later section). During
             actual game play, the right part of the screen is filled with the
             next 5 upcoming pieces, allowing players to plan ahead their stacks.
@@ -146,7 +147,7 @@
           <pre><code class="language-csharp">public Transform[,] grid = new Transform[h, w]; 
 </code></pre>
           <p>
-            Using this array representation is useful, as it simplifies our
+            Using this array representation is helpful, as it simplifies our
             workflow considerably. Therefore, for each frame, we perform the
             following:
           </p>
@@ -190,7 +191,53 @@
             shifting each cube down by 1 on the y-axis.
           </p>
           <h2>Piece Movement</h2>
-          <p></p>
+          <p>
+            Within the <code>Update()</code> function of <code>Piece.cs</code>,
+            we have listeners for each of the arrow keys for left, right, down
+            movement, as well as piece rotation.
+          </p>
+          <div class="captioned-image">
+            <pre><code class="language-csharp">if (Input.GetKeyDown(KeyCode.RightArrow)) {
+    totalTimePassed = 0;
+    Debug.Log(Time.deltaTime);
+    moveTetromino(new Vector3(1, 0, 0));
+}</code></pre>
+            <p class="italics">
+              An example key listener, which calls another helper function to
+              move the piece.
+            </p>
+          </div>
+          <p>
+            Piece rotation is performed by doing a simple 90 degree rotation on
+            the z-axis around the first child of the tetrominio.
+          </p>
+          <pre><code class="language-csharp">transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
+</code></pre>
+          <h3>DAS and ARR</h3>
+          <p>
+            DAS and ARR are implemented by keeping track of the time in which a
+            key is pressed. For DAS, we record the total time passed since a key
+            is pressed in a helper variable, setting the counter to 0 upon
+            initial press. When that time passes a set value, another condition
+            is triggered that calls <code>Input.GetKey()</code>. ARR is then set
+            by keeping track of the total time passed when the key is held down.
+            When the time passes a set ARR value, we continue moving the piece,
+            resetting the time value to 0. Altogether, our DAS and ARR
+            implementation results in the following:
+          </p>
+          <div class="captioned-image">
+            <pre><code class="language-csharp">timePassed += Time.deltaTime;
+totalTimePassed += Time.deltaTime;
+if (Input.GetKey(KeyCode.LeftArrow) && 
+    timePassed >= arr && 
+    totalTimePassed >= das) {
+    moveTetromino(new Vector3(-1, 0, 0));
+    timePassed = 0f;
+}  </code></pre>
+            <p class="italics">
+              ARR is required to limit the rate that GetKey() is triggered.
+            </p>
+          </div>
           <h2>Upcoming Pieces</h2>
           <h2>Piece Spawning</h2>
           <pre><code class="language-csharp">public void spawnTetrominoe(
@@ -223,6 +270,7 @@
             Within <code>TetrisBoard.cs</code>, we have the function
             <code>spawnTetrominoe()</code> that's
           </p>
+          <h1>External Resources</h1>
         </div>
       </div>
     </main>

@@ -63,7 +63,7 @@ li {
   height: auto; 
 }
 
-.captaioned-image {
+.captioned-image {
   width: 100%; 
   display: flex; 
   flex-direction: column;

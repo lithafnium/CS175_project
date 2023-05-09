@@ -72,7 +72,7 @@ public class Piece : MonoBehaviour
         } else {
             transform.localPosition += new Vector3(0, 1, 0);
             
-            Lock()
+            Lock();
         }
     }
 
