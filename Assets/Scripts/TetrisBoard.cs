@@ -5,6 +5,7 @@ using UnityEngine;
 public class TetrisBoard : MonoBehaviour
 {
     public GameObject[] tetrominoes; 
+    public GameObject[] outlineTetrominoes;
     public GameObject[] upcoming; 
     public int[] upcomingIds; 
     public GameObject hold; 
@@ -105,6 +106,26 @@ public class TetrisBoard : MonoBehaviour
         }
     }
 
+    public int getLowestPossiblePosition(Piece piece){
+        TetrisBoard board = this;
+        Debug.Log("FINDING LOWEST POSSIBLE for "+piece);
+
+        int startingY = (int) piece.transform.localPosition.y;
+        for(int i=startingY-1;i>=0;i--){
+            foreach (Transform child in piece.transform) {
+                Vector2 pos = child.position; 
+                pos = new Vector2(pos.x + 4.5f, i+(pos.y - piece.transform.localPosition.y)); 
+                pos = piece.roundPosition(pos); 
+                if (!board.insideGrid(pos) || piece.isOccupied(board, pos)) {
+                    Debug.Log("LOWEST FOUND IS "+(i+1));
+                    return (i+1);
+                }
+            }
+        }
+        return 1;
+    }
+
+
     public void spawnTetrominoe(bool first, GameObject spawn, int id, bool drawUpcomingPiece) {
 
         if (spawn == null) {
@@ -121,6 +142,13 @@ public class TetrisBoard : MonoBehaviour
         
         Debug.Log("Spawning: " + spawn); 
         this.current = instantiatePiece(spawn, true, new Vector3(-0.5f, 18, 0), id);
+        var pieceObj = this.current.GetComponent<Piece>();
+
+        // Create shadow piece
+        int previewY = getLowestPossiblePosition(pieceObj);
+        GameObject preview = instantiatePiece(outlineTetrominoes[id], false, new Vector3(-0.5f, previewY, 0), id);
+        pieceObj.shadow = preview;
+        
         if (drawUpcomingPiece) drawUpcoming(false);
 
     }

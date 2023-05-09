@@ -5,6 +5,7 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
     public GameObject tb; 
+    public GameObject shadow;
     float lastFall = 0;
     public bool isGamePiece; 
     public int id; 
@@ -72,7 +73,7 @@ public class Piece : MonoBehaviour
         } else {
             transform.localPosition += new Vector3(0, 1, 0);
             
-            Lock()
+            Lock();
         }
     }
 
@@ -85,6 +86,19 @@ public class Piece : MonoBehaviour
         }
     }
 
+    private void moveTetrominoAndShadow(Vector3 direction) {
+        transform.localPosition += direction;
+        Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
+        shadowPieceObj.transform.localPosition += direction;
+
+        if (checkBoardPosition()) {
+            movePiece();
+        } else {
+            transform.localPosition -= direction;
+            shadowPieceObj.transform.localPosition -= direction;
+        }
+    }
+
     private void rotateTetromino(float angle) {
         transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
 
@@ -94,6 +108,39 @@ public class Piece : MonoBehaviour
         } else {
             transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
         }
+    }
+
+    private void rotateTetrominoAndShadow(float angle) {
+        transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
+        Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
+        shadowPieceObj.transform.RotateAround(shadowPieceObj.transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
+
+
+        // transform.Rotate(new Vector3(0, 0, angle));
+        if (checkBoardPosition()) {
+            movePiece();
+        } else {
+            transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
+            shadowPieceObj.transform.RotateAround(shadowPieceObj.transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
+        }
+    }
+
+    private void updateOutlineTetromino(){
+        // Updates the y direction for outline
+        Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
+        
+        // calculate y position in board class
+        int currentY = (int) shadowPieceObj.transform.localPosition.y;
+        int newY = board.getLowestPossiblePosition(this);
+        Debug.Log("new y: "+newY);
+
+        // Update if needed
+        if(currentY != newY){
+            Vector3 direction = new Vector3(0, newY-currentY, 0);
+            shadowPieceObj.transform.localPosition += direction;
+        }
+
     }
     // Start is called before the first frame update
     void Start()
@@ -124,24 +171,29 @@ public class Piece : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow)) {
             totalTimePassed = 0;
-            moveTetromino(new Vector3(-1, 0, 0));
+            moveTetrominoAndShadow(new Vector3(-1, 0, 0));
+            updateOutlineTetromino();
         } else if (Input.GetKey(KeyCode.LeftArrow) && timePassed >= arr && totalTimePassed >= das) {
-            moveTetromino(new Vector3(-1, 0, 0));
+            moveTetrominoAndShadow(new Vector3(-1, 0, 0));
+            updateOutlineTetromino();
             timePassed = 0f;
         } 
         
         if (Input.GetKeyDown(KeyCode.RightArrow)) {
             totalTimePassed = 0;
             Debug.Log(Time.deltaTime);
-            moveTetromino(new Vector3(1, 0, 0));
+            moveTetrominoAndShadow(new Vector3(1, 0, 0));
+            updateOutlineTetromino();
         } else if (Input.GetKey(KeyCode.RightArrow) && timePassed >= arr && totalTimePassed >= das) {
-            moveTetromino(new Vector3(1, 0, 0));
+            moveTetrominoAndShadow(new Vector3(1, 0, 0));
+            updateOutlineTetromino();
             timePassed = 0f;
         } 
         
         // hi
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
-            rotateTetromino(90);
+            rotateTetrominoAndShadow(90);
+            updateOutlineTetromino();
         } 
         
         if (Input.GetKeyDown(KeyCode.DownArrow) || Time.time - lastFall >= 1) {  
@@ -155,7 +207,9 @@ public class Piece : MonoBehaviour
             timePassed = 0f;
         } else if (Input.GetKeyDown(KeyCode.Space)){
             // Move the piece to the bottom of the board
+            Destroy(this.shadow);
             moveToBottom();
+            movePiece();
             Lock();
             
 
