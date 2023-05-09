@@ -41,6 +41,12 @@ public class Piece : MonoBehaviour
         return true; 
     }
 
+    public void moveToBottom(){
+        // I don't know why this works and a while loop doesn't
+        for(int i=0;i<20;i++){
+            moveTetromino(new Vector3(0, -1, 0));
+        }
+    }
     public void movePiece() {
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
         for (int i = 0; i < 20; i++) {
@@ -66,11 +72,7 @@ public class Piece : MonoBehaviour
         } else {
             transform.localPosition += new Vector3(0, 1, 0);
             
-            TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
-            board.updateGrid(); 
-
-            board.spawnTetrominoe(false, null, -1, true);
-            enabled = false; 
+            Lock()
         }
     }
 
@@ -101,6 +103,15 @@ public class Piece : MonoBehaviour
         this.timePassed = 0f; 
         this.totalTimePassed = 0f; 
         this.tb = GameObject.Find("TetrisBoard");
+    }
+
+    void Lock()
+    {
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
+        board.updateGrid(); 
+
+        board.spawnTetrominoe(false, null, -1, true);
+        enabled = false; 
     }
 
     // Update is called once per frame
@@ -142,6 +153,11 @@ public class Piece : MonoBehaviour
             movePieceDown(); 
             lastFall = Time.time;
             timePassed = 0f;
+        } else if (Input.GetKeyDown(KeyCode.Space)){
+            // Move the piece to the bottom of the board
+            moveToBottom();
+            Lock();
+            
 
         } 
 
