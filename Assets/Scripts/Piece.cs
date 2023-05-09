@@ -74,8 +74,6 @@ public class Piece : MonoBehaviour
         }
     }
 
-
-
     private void moveTetromino(Vector3 direction) {
         transform.localPosition += direction;
         if (checkBoardPosition()) {

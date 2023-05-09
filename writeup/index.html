@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Tetris: CS 175 Project</title>
     <link rel="stylesheet" href="./style.css" />
+    <link href="./prism.css" rel="stylesheet" />
+
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   </head>
   <body>
@@ -120,11 +122,111 @@
             which pieces move in their intended direction. Both of these were
             implemented and are tuneable with individual parameters in our C#
             scripts, allowing for players to adjust their piece handling
-            capabilities.
+            capabilities. More details will be outlined below.
+          </p>
+          <h1>Unity Implementation (the fun stuff)</h1>
+          <div class="captaioned-image">
+            <img class="image" style="width: 90%" src="html_images/board.png" />
+            <p class="italics">Our beautiful board.</p>
+          </div>
+          <h2>Board Design</h2>
+          <p>
+            Board design is fairly simple. In the center we drew a 10x20 grid
+            outlined by 3D cubes. On the top left, we outline a square meant to
+            display the "held" piece (will outline in a later section). During
+            actual game play, the right part of the screen is filled with the
+            next 5 upcoming pieces, allowing players to plan ahead their stacks.
+          </p>
+          <h2>Board Representation</h2>
+          <p>
+            On top of the 3D board drawn in Unity, we also represented our board
+            as a 20x10 array of <code>Transform</code> objects, notably so that
+            we can perform transofmrations on individual blocks rather easily.
+          </p>
+          <pre><code class="language-csharp">public Transform[,] grid = new Transform[h, w]; 
+</code></pre>
+          <p>
+            Using this array representation is useful, as it simplifies our
+            workflow considerably. Therefore, for each frame, we perform the
+            following:
+          </p>
+          <ol>
+            <li>
+              For each piece movement, we first check if the piece is inside the
+              grid or colliding with another piece. This requires looping
+              through each individual cube of the active tetromino, converting
+              its piece-world coordinates to array positions using rounding, and
+              then checking the grid if the spot at the specified row and column
+              is null or not. This is implemented in the function
+              <code>checkBoardPosition()</code> under <code>Piece.cs</code>.
+              <ul>
+                <li>
+                  Checking if a board position is occupied is as simple as
+                  checking if an individual square's
+                  <span class="italics bold">parent</span> is not equal to the
+                  current tetromino. This is because in the scene graph, each
+                  individual cube is a child of a tetromino, and we set each
+                  item in the array to be the children of the tetrominioes.
+                </li>
+              </ul>
+            </li>
+            <li>
+              If the array position is free, that is, all cubes of the active
+              piece are not occupying any space, then we move the piece to its
+              specified location.
+            </li>
+            <li>
+              Upon moving the piece, we set the piece's new location in the
+              array by looping through the piece's children, converting its
+              coordinates to array positions, and setting the array to be the
+              child object. We also set its old locations to null.
+            </li>
+          </ol>
+          <p>
+            When a piece is placed, we need to check whether any rows are
+            filled. This is accomplished by first getting all filled rows,
+            destroying all the <code>Transform</code> objects in the array, and
+            then moving all rows above the filled row down by one position,
+            shifting each cube down by 1 on the y-axis.
+          </p>
+          <h2>Piece Movement</h2>
+          <p></p>
+          <h2>Upcoming Pieces</h2>
+          <h2>Piece Spawning</h2>
+          <pre><code class="language-csharp">public void spawnTetrominoe(
+            bool first, 
+            GameObject spawn, 
+            int id, 
+            bool drawUpcomingPiece
+          ) {
+
+  if (spawn == null) {
+      if (first) {
+          var (piece, index) = getRandomPiece(); 
+          spawn = piece; 
+          id = index; 
+      } else {
+          spawn = this.upcoming[0]; 
+          id = this.upcomingIds[0];
+      }
+  }
+
+  Debug.Log("Spawning: " + spawn); 
+  this.current = instantiatePiece(spawn, 
+                                  true, 
+                                  new Vector3(-0.5f, 18, 0), id);
+  if (drawUpcomingPiece) drawUpcoming(false);
+
+}</code></pre>
+
+          <p>
+            Within <code>TetrisBoard.cs</code>, we have the function
+            <code>spawnTetrominoe()</code> that's
           </p>
         </div>
       </div>
     </main>
     <script src="index.js"></script>
+    <script src="prism.js"></script>
   </body>
 </html>
