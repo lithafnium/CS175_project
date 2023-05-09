@@ -62,10 +62,9 @@
             that of the standard Tetris color sceheme.
           </p>
           <p>
-            The key compnonent of tetrominoes lies in the rotation system. In
-            the Super Rotation System, or SRS, the current Tetris standard for
-            how tetrominoes behave when rotated, the following rules are in
-            place, taken from the Tetris wiki:
+            Modern versios of Tetris follow the Super Rotation System, or SRS,
+            which defines the behavior of tetrominioes when rotated. The
+            following rules are taken from the Tetris wiki:
           </p>
           <ul>
             <li>
@@ -213,12 +212,7 @@
               move the piece.
             </p>
           </div>
-          <p>
-            Piece rotation is performed by doing a simple 90 degree rotation on
-            the z-axis around the first child of the tetrominio.
-          </p>
-          <pre><code class="language-csharp">transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
-</code></pre>
+
           <h3>DAS and ARR</h3>
           <p>
             DAS and ARR are implemented by keeping track of the time in which a
@@ -252,6 +246,52 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
               ARR is required to limit the rate that GetKey() is triggered.
             </p>
           </div>
+          <h2>Piece Rotation</h2>
+          <p>
+            Piece rotation is performed by doing a simple 90 degree rotation on
+            the z-axis around the first child of the tetrominio.
+          </p>
+          <pre><code class="language-csharp">transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
+</code></pre>
+          <p>
+            Sometimes, if the player attempts to rotate a piece, the position
+            the piece would normally occupy after rotation is obstructed, either
+            by a another piece, the floor, or a wall. According to the SRS, the
+            game will attempt to "kick" the pice into another position nearby.
+          </p>
+          <p>
+            For each piece, there exists 5 possible positions to be tested when
+            a rotation is performed. Since the piece exists in 4 different
+            states for each rotation, we have a total of 20 possible locations
+            for a piece. In the table below, each row indicates either a right
+            (R) or left (L) rotation, and the coordinates indicate the shift on
+            the x and y axis to be tested after the rotation. Convention states
+            that a positive x value means right, and a positive y value means
+            represents upwards.
+          </p>
+          <div class="captioned-image">
+            <img
+              class="image"
+              style="width: 60%"
+              src="html_images/wallkicks.png"
+            />
+            <p class="italics">
+              Wall kick data for each tetrominio. Note that since we only
+              perform clockwise rotations, we only focus on the first 4 rows of
+              each table.
+            </p>
+          </div>
+          <p>
+            In our implementation, we store these states in a dictionary and
+            count the number of rotations modulo 4 to grab the correspoding list
+            of 5 states to test.
+          </p>
+          <pre><code class="language-csharp">public Dictionary&lt;int, Vector3[]&gt; jlstzWallKicks = new Dictionary&lt;int, Vector3[]&gt;() {
+    {1, new Vector3[]{new Vector3(0, 0, 0), new Vector3(-1, 0, 0), new Vector3(-1, 1, 0), new Vector3(0, -2, 0), new Vector3(-1, -2, 0)}},
+    {2, new Vector3[]{new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, -1, 0), new Vector3(0, 2, 0), new Vector3(1, 2, 0)}},
+    {3, new Vector3[]{new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, -1, 0), new Vector3(0, 2, 0), new Vector3(1, 2, 0)}},
+    {0, new Vector3[]{new Vector3(0, 0, 0), new Vector3(-1, 0, 0), new Vector3(-1, 1, 0), new Vector3(0, -2, 0), new Vector3(-1, -2, 0)}}
+};</code></pre>
           <h2>Upcoming Pieces</h2>
           <p>
             Upcoming pieces are stored in an array of GameObjects, and are
