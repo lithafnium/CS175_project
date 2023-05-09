@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Tetris: CS 175 Project</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="container-inner">
+          <h1>CS 175 Project: Tetris</h1>
+          <p class="italics">By Steve Li and Elizabeth Ling</p>
+          <h2>Background</h2>
+          <p>
+            Tetris, a puzzle game created by Soviet Engineer Alexey Pajitnov,
+            has captivated audiences since the 1980s. First starting out on
+            early computers such as the Electronika 60, the game quickly grew in
+            popularity, and practically any device with a screen mostly likely
+            has the capability to run the game. Within this project, we aim to
+            bring the game to the modern medium, a 3D stylized version built
+            using Unity using the concepts learned in class.
+          </p>
+          <h2>Tetris Basics</h2>
+          <h3>Rules</h3>
+          <p>
+            The game is rather simple. On a 10x20 grid of squares, players
+            attempt to stack individual pieces, named
+            <span class="italics bold">tetrominoes</span>, on top of each other.
+            Filling an entire row of blocks
+            <span class="italics bold">clears</span> the row of blocks, bringing
+            every other block above it down a row. If the stack of blocks reach
+            the very top, the game ends. Furthermore, as more lines are cleared,
+            the game is sped up. The goal, therefore, is to clear as many rows
+            before the stack reaches the top of the board.
+          </p>
+          <h3>Tetrominoes</h3>
+          <p>
+            A tetromino is a geometric shape composed of 4 squares. In a
+            standard game of tetris, the player is presented with 7 tetrominoes,
+            indicated by the letter the shape draws out: I, L, J, T, O, S, and
+            Z.
+          </p>
+          <div class="image-grid">
+            <img class="image" src="html_images/I.png" />
+            <img class="image" src="html_images/L.png" />
+            <img class="image" src="html_images/J.png" />
+            <img class="image" src="html_images/T.png" />
+            <img class="image" src="html_images/O.png" />
+            <img class="image" src="html_images/S.png" />
+            <img class="image" src="html_images/Z.png" />
+          </div>
+          <p>
+            Within our implementation of Tetris, we created the 3D models of
+            each piece ourselves, and then applied a color material that matched
+            that of the standard Tetris color sceheme.
+          </p>
+          <p>
+            The key compnonent of tetrominoes lies in the rotation system. In
+            the Super Rotation System, or SRS, the current Tetris standard for
+            how tetrominoes behave when rotated, the following rules are in
+            place, taken from the Tetris wiki:
+          </p>
+          <ul>
+            <li>
+              When unobstructed, the tetrominoes all appear to rotate purely
+              about a single point. These apparent rotation centers are shown as
+              circles in the diagram.
+            </li>
+            <li>
+              It is a pure rotation in a mathematical sense, as opposed to the
+              combination of rotation and translation found in other systems
+              such as Sega Rotation and Atari Rotation.
+            </li>
+            <li>
+              For the I and O tetrominoes, the apparent rotation center is at
+              the intersection of gridlines, whereas for the J, L, S, T and Z
+              tetrominoes, the rotation center coincides with the center of one
+              of the four constituent blocks.
+            </li>
+          </ul>
+          <div class="captaioned-image">
+            <img
+              class="image"
+              style="width: 40%"
+              src="html_images/rotation.png"
+            />
+            <p class="italics">
+              The rotation states of all 7 tetrominioes according to SRS
+            </p>
+          </div>
+          <p>
+            Our rotation system attempted to emulate SRS as best as possible,
+            placing the rotation point towards the center of the piece. With the
+            I and O tetrominoes, we simply disabled rotation of the O piece, and
+            the I piece we chose a block close to the center as the rotation
+            point.
+          </p>
+          <div class="captaioned-image">
+            <img
+              class="image"
+              style="width: 50%"
+              src="html_images/I_center.png"
+            />
+            <p class="italics">The pivot point of the I piece.</p>
+          </div>
+          <h3>DAS and ARR</h3>
+          <p>
+            Another component of tetrominioes lies in their movement, also known
+            as <span class="italics bold">finesse</span> in the Tetris
+            community. Two settings are commonly used in most Tetris ports,
+            known as DAS and ARR. DAS stands for
+            <span class="bold">Delayed Auto Shift</span>, and represents the
+            delay in which a piece will move when the player continues to hold a
+            key. On the other hand, ARR stands for
+            <span class="bold">Auto Repeat Rate</span>, which means the rate at
+            which pieces move in their intended direction. Both of these were
+            implemented and are tuneable with individual parameters in our C#
+            scripts, allowing for players to adjust their piece handling
+            capabilities.
+          </p>
+        </div>
+      </div>
+    </main>
+    <script src="index.js"></script>
+  </body>
+</html>

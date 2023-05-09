@@ -58,6 +58,22 @@ public class Piece : MonoBehaviour
         }
     }
 
+    public void movePieceDown() {
+        transform.localPosition += new Vector3(0, -1, 0);
+        if (checkBoardPosition()) {
+            // Debug.Log("CALLING UPDATE"); 
+            movePiece();
+        } else {
+            transform.localPosition += new Vector3(0, 1, 0);
+            
+            TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
+            board.updateGrid(); 
+
+            board.spawnTetrominoe(false, null, -1, true);
+            enabled = false; 
+        }
+    }
+
 
 
     private void moveTetromino(Vector3 direction) {
@@ -121,37 +137,11 @@ public class Piece : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.DownArrow) || Time.time - lastFall >= 1) {  
             totalTimePassed = 0;
-              
-            transform.localPosition += new Vector3(0, -1, 0);
-            if (checkBoardPosition()) {
-                // Debug.Log("CALLING UPDATE"); 
-                movePiece();
-            } else {
-                transform.localPosition += new Vector3(0, 1, 0);
-                
-                TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
-                board.updateGrid(); 
-
-                board.spawnTetrominoe(false, null, -1, true);
-                enabled = false; 
-            }
-
+            movePieceDown(); 
+            
             lastFall = Time.time;
         } else if (Input.GetKey(KeyCode.DownArrow) && timePassed >= arr && totalTimePassed >= das) {
-            transform.localPosition += new Vector3(0, -1, 0);
-            if (checkBoardPosition()) {
-                // Debug.Log("CALLING UPDATE"); 
-                movePiece();
-            } else {
-                transform.localPosition += new Vector3(0, 1, 0);
-                
-                TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
-                board.updateGrid(); 
-
-                board.spawnTetrominoe(false, null, -1, true);
-                enabled = false; 
-            }
-
+            movePieceDown(); 
             lastFall = Time.time;
             timePassed = 0f;
 
