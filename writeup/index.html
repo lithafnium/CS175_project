@@ -306,6 +306,22 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
             <img class="image" src="html_images/upcoming.png" />
             <p class="italics">The board with upcoming pieces on the right</p>
           </div>
+          <h2>Piece Shadows</h2>
+          <p>
+            Each piece displays a shadow previewing where it would land
+            once placed. Shadow pieces are implemented using the same class as normal pieces, 
+            and a pointer to the shadow is recorded in the corresponding normal piece. 
+            Then, the piece class moves its shadow whenever it moves left
+            or right or rotates. 
+            Shadow pieces aren't recorded in the board grid,
+            so they don't occupy any space. To determine the shadow's position, 
+            we calculates the falling piece's lowest possible 
+            position on the board given the current pieces, and we update as it moves. 
+          </p>
+          <div class="captioned-image">
+            <img class="image" style="width: 90%" src="html_images/outline.PNG"/>
+            <p class="italics">A piece with its corresponding shadow</p>
+          </div>
           <h2>Holding Pieces</h2>
           <p></p>
           <h1>External Resources</h1>
