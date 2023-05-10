@@ -10,6 +10,7 @@ public class TetrisBoard : MonoBehaviour
     public int[] upcomingIds; 
     public GameObject hold; 
     public GameObject current; 
+    public GameObject preview; 
 
     public static int w = 10; 
     public static int h = 22; 
@@ -150,8 +151,8 @@ public class TetrisBoard : MonoBehaviour
 
         // Create shadow piece
         int previewY = getLowestPossiblePosition(pieceObj);
-        GameObject preview = instantiatePiece(outlineTetrominoes[id], false, new Vector3(-0.5f, previewY, 0), id);
-        pieceObj.shadow = preview;
+        this.preview = instantiatePiece(outlineTetrominoes[id], false, new Vector3(-0.5f, previewY, 0), id);
+        pieceObj.shadow = this.preview;
         
         if (drawUpcomingPiece) drawUpcoming(false);
 
@@ -199,14 +200,14 @@ public class TetrisBoard : MonoBehaviour
                 var holdObj = this.hold.GetComponent<Piece>(); 
                 Destroy(this.hold); 
                 Destroy(this.current); 
-
+                Destroy(this.preview); 
                 this.hold = newHold; 
                 spawnTetrominoe(false, tetrominoes[holdObj.id], holdObj.id, false); 
                 
             } else {
                 this.hold = newHold; 
                 Destroy(this.current); 
-
+                Destroy(this.preview); 
                 spawnTetrominoe(false, null, -1, true); 
             }
         }
