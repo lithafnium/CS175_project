@@ -143,6 +143,7 @@ public class Piece : MonoBehaviour
         foreach (Vector3 kick in kicks) {
             if (checkBoardPosition(kick)) {
                 transform.localPosition += kick; 
+                shadowPieceObj.transform.localPosition += kick;
                 movePiece(); 
                 canMove = true; 
                 break; 
