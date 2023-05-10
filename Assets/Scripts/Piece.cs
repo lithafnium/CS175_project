@@ -78,6 +78,7 @@ public class Piece : MonoBehaviour
             transform.localPosition += DOWN;
             movePiece();
         } else {
+            Destroy(this.shadow);
             removePiece();
             movePiece(); 
             Lock();
