@@ -485,7 +485,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Controls: \n- Left/Right/Down arrow: move piece left right or down\n-
-    Up arrow: rotate piece\n- c: hold piece\n- Mouse/WASD: control camera\n"
+    Up arrow: rotate piece\n- c: hold piece\n- space: place piece\n- Mouse/WASD:
+    control camera\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}

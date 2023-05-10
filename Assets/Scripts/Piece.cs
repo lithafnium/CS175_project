@@ -70,15 +70,29 @@ public class Piece : MonoBehaviour
             moveTetromino(DOWN);
         }
     }
-    public void movePiece() {
-        TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
-        for (int i = 0; i < 22; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (isOwned(board, i, j)) {
-                    board.grid[i, j] = null; 
-                }
-            }
+
+    public void movePieceDown() {
+        if (checkBoardPosition(DOWN)) {
+            removePiece();
+            transform.localPosition += DOWN;
+            movePiece();
+        } else {
+            removePiece();
+            movePiece(); 
+            Lock();
         }
+    }
+
+    private void moveTetromino(Vector3 direction) {
+        if (checkBoardPosition(direction)) {
+            removePiece();
+            transform.localPosition += direction;
+            movePiece();
+        } 
+    }
+
+    private void movePiece() {
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
         foreach (Transform child in transform) {
             Vector2 pos = child.position; 
             pos = new Vector2(pos.x + 4.5f, pos.y); 
@@ -87,24 +101,21 @@ public class Piece : MonoBehaviour
         }
     }
 
-    public void movePieceDown() {
-        if (checkBoardPosition(DOWN)) {
-            transform.localPosition += DOWN;
-            movePiece();
-        } else {
-            movePiece(); 
-            Lock();
-        }
-    }
+    private void removePiece() {
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
 
-    private void moveTetromino(Vector3 direction) {
-        if (checkBoardPosition(direction)) {
-            transform.localPosition += direction;
-            movePiece();
-        } 
+        foreach (Transform child in transform) {
+            Vector2 pos = child.position; 
+            pos = new Vector2(pos.x + 4.5f, pos.y); 
+            pos = roundPosition(pos);
+            board.grid[(int) pos.y, (int) pos.x] = null; 
+        }
+        
     }
 
     private void rotateTetromino(float angle) {
+        
+        removePiece(); 
         transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
         Vector3[] kicks;
         if (this.id == 6){
@@ -117,7 +128,7 @@ public class Piece : MonoBehaviour
         
         foreach (Vector3 kick in kicks) {
             if (checkBoardPosition(kick)) {
-                transform.position += kick; 
+                transform.localPosition += kick; 
                 movePiece(); 
                 canMove = true; 
                 break; 
