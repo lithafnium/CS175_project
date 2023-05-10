@@ -16,6 +16,8 @@ public class TetrisBoard : MonoBehaviour
     public static int h = 22; 
     public Transform[,] grid = new Transform[h, w]; 
 
+    public List<GameObject> spawned; 
+
     public bool insideGrid(Vector2 pos) {
         return pos.y >= 1.0f && pos.x >= 0 && pos.x <= 9;
     }
@@ -123,7 +125,6 @@ public class TetrisBoard : MonoBehaviour
                 pos = new Vector2(pos.x + 4.5f, i+(pos.y - piece.transform.localPosition.y)); 
                 pos = piece.roundPosition(pos); 
                 if (!board.insideGrid(pos) || piece.isOccupied(board, pos)) {
-                    Debug.Log("LOWEST FOUND IS "+(i+1));
                     return (i+1);
                 }
             }
@@ -154,16 +155,33 @@ public class TetrisBoard : MonoBehaviour
         this.preview = instantiatePiece(outlineTetrominoes[id], false, new Vector3(-0.5f, previewY, 0), id);
         pieceObj.shadow = this.preview;
         
+        spawned.Add(this.current); 
+
         if (drawUpcomingPiece) drawUpcoming(false);
 
     }
-    // Start is called before the first frame update
-    void Start()
-    {
+
+    public void beginGame() {
+        foreach (GameObject g in this.spawned) {
+            Destroy(g); 
+        }
+
+        foreach (GameObject g in this.upcoming) {
+            Destroy(g); 
+        }
+
+        Destroy(this.preview); 
+
+        this.spawned = new List<GameObject>(); 
         this.upcoming = new GameObject[5];
         this.upcomingIds = new int[5]; 
         drawUpcoming(true);
         spawnTetrominoe(true, null, -1, true);
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        beginGame(); 
     }
 
     // Update is called once per frame

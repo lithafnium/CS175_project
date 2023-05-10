@@ -116,7 +116,6 @@ public class Piece : MonoBehaviour
 
     private void removePiece() {
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
-
         foreach (Transform child in transform) {
             Vector2 pos = child.position; 
             pos = new Vector2(pos.x + 4.5f, pos.y); 
@@ -188,9 +187,10 @@ public class Piece : MonoBehaviour
 
         if (this.isGamePiece){
             if (!checkBoardPosition(new Vector3(0, 0, 0))) {
-                Debug.Log("GAME OVER");
+
                 this.enabled = false;
                 this.isGamePiece = false;
+                board.beginGame(); 
             }
         }
     }
