@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./style.css" />
     <link href="./prism.css" rel="stylesheet" />
 
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <!-- <link rel="icon" href="./favicon.ico" type="image/x-icon" /> -->
   </head>
   <body>
     <main>
@@ -22,9 +22,9 @@
             has captivated audiences since the 1980s. First starting out on
             early computers such as the Electronika 60, the game quickly grew in
             popularity, and practically any device with a screen mostly likely
-            has the capability to run the game. Within this project, we aim to
+            has the capability to run Tetris. Within this project, we aim to
             bring the game to the modern medium, a 3D stylized version built
-            using Unity using the concepts learned in class.
+            using Unity with the concepts learned in class.
           </p>
           <h2>Tetris Basics</h2>
           <h3>Rules</h3>
@@ -58,12 +58,12 @@
           </div>
           <p>
             Within our implementation of Tetris, we created the 3D models of
-            each piece ourselves, and then applied a color material that matched
-            that of the standard Tetris color sceheme.
+            each piece ourselves, and then we applied a color material that
+            matched that of the standard Tetris color sceheme.
           </p>
           <p>
-            Modern versios of Tetris follow the Super Rotation System, or SRS,
-            which defines the behavior of tetrominioes when rotated. The
+            Modern versions of Tetris follow the Super Rotation System, or SRS,
+            which defines the behavior of tetrominoes when rotated. The
             following rules are taken from the Tetris wiki:
           </p>
           <ul>
@@ -99,7 +99,7 @@
             placing the rotation point towards the center of the piece. With the
             I and O tetrominoes, we simply disabled rotation of the O piece, and
             the I piece we chose a block close to the center as the rotation
-            point.
+            point. More details will be explained in a later section.
           </p>
           <div class="captioned-image">
             <img
@@ -116,8 +116,8 @@
             community. Two settings are commonly used in most Tetris ports,
             known as DAS and ARR. DAS stands for
             <span class="bold">Delayed Auto Shift</span>, and represents the
-            delay in which a piece will move when the player continues to hold a
-            key. On the other hand, ARR stands for
+            delay before a piece will start to repeatedly move when the player
+            continues to hold a key. ARR stands for
             <span class="bold">Auto Repeat Rate</span>, which means the rate at
             which pieces move in their intended direction. Both of these were
             implemented and are tuneable with individual parameters in our C#
@@ -131,11 +131,12 @@
           </div>
           <h2>Board Design</h2>
           <p>
-            Board design is fairly simple. In the center we drew a 10x20 grid
-            outlined by 3D cubes. On the top left, we outlined a square meant to
-            display the "held" piece (will outline in a later section). During
-            actual game play, the right part of the screen is filled with the
-            next 5 upcoming pieces, allowing players to plan ahead their stacks.
+            Our board design is fairly simple. In the center we drew a 10x20
+            grid outlined by 3D cubes. On the top left, we outlined a square
+            meant to display the "held" piece (will outline in a later section).
+            During actual game play, the right part of the screen is filled with
+            the next 5 upcoming pieces, allowing players to plan ahead their
+            stacks.
           </p>
           <h2>Board Representation</h2>
           <p>
@@ -183,18 +184,12 @@
             </li>
           </ol>
           <p>
-            When a piece is placed, we need to check whether any rows are
-            filled, and then subsequently remove them from the board. This is
-            accomplished by first getting all filled rows, destroying all the
+            When a piece is placed, we need to check whether any rows are filled
+            to then be removed from the board. This is accomplished by first
+            getting all filled rows, destroying all the
             <code>Transform</code> objects in the array, and then moving all
             rows above the filled row down by one position, shifting each cube
             down by 1 on the y-axis.
-          </p>
-          <h2>Piece Spawning</h2>
-
-          <p>
-            Within <code>TetrisBoard.cs</code>, we have the function
-            <code>spawnTetrominoe()</code> that's
           </p>
           <h2>Piece Movement</h2>
           <p>
@@ -230,7 +225,7 @@
             <pre><code class="language-csharp">public float arr;
 public float das; </code></pre>
             <p class="italics">
-              The lower the ARR the faster the repeat rate. The lower the DAS
+              The lower the ARR the faster the repeat rate. The higher the DAS
               the higher the delay before repeating.
             </p>
           </div>
@@ -267,7 +262,7 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
             for a piece. In the table below, each row indicates either a right
             (R) or left (L) rotation, and the coordinates indicate the shift on
             the x and y axis to be tested after the rotation. Convention states
-            that a positive x value means right, and a positive y value means
+            that a positive x value means right, and a positive y value
             represents upwards.
           </p>
           <div class="captioned-image">
@@ -295,7 +290,7 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
 };</code></pre>
           <h2>Upcoming Pieces</h2>
           <p>
-            Upcoming pieces are stored in an array of GameObjects, and are
+            Upcoming pieces are stored in an array of GameObjects and are
             updated each time a new piece is spawned. Each piece within the
             array is then drawn on the right side of the board. When a new piece
             is spawned, we take the first piece in the array and instantiate
@@ -348,6 +343,46 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
             <img class="image" src="html_images/held.png" />
             <p class="italics">A held piece in the top left location</p>
           </div>
+          <h1>Reflections and Next Steps</h1>
+          <p>
+            Altogether, this project was a great foray into game development
+            using Unity. We learned several things, including but not limited
+            to:
+          </p>
+          <ul>
+            <li>
+              Creating 3D objects and managing their relative coordinates in
+              world space
+            </li>
+            <li>Creating materials and applying them to objects</li>
+            <li>Coding in C# and scripting within Unity's game loop</li>
+            <li>
+              Efficiency within games; we tried to reduce the total number of
+              computations and the number of pieces store in the scene
+            </li>
+            <li>
+              Planning and Design: even with a simple game like Tetris, we had
+              to make several design choices and abstraction decisions wihtin
+              our codebase to reduce complexity.
+            </li>
+            <li>How to incorporate scripts with Unity's game objects</li>
+          </ul>
+          <p>
+            Other additional feaetures that we could pursue with this project
+            include the following:
+          </p>
+          <ul>
+            <li>Having a scoring system</li>
+            <li>
+              Having a 2 player mode that allows players to "send lines" over to
+              the other person
+            </li>
+            <li>Make DAS and ARR adjustable within the game's UI</li>
+            <li>
+              Make the game TRULY 3D: add an extra dimension to the game board
+              on the z-axis
+            </li>
+          </ul>
           <h1>External Resources</h1>
           The following resources were used for the creation of this project:
           <ul>
@@ -412,7 +447,6 @@ if (Input.GetKey(KeyCode.LeftArrow) &&
         </div>
       </div>
     </main>
-    <script src="index.js"></script>
     <script src="prism.js"></script>
   </body>
 </html>

@@ -187,6 +187,9 @@ public class TetrisBoard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKey(KeyCode.Q)) {
+            Application.Quit();
+        }
         if (Input.GetKeyDown(KeyCode.C)) {
             bool isNull = this.hold == null;
 

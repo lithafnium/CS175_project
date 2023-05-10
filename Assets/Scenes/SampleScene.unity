@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028353, g: 0.22571383, b: 0.30692253, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -486,7 +486,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Controls: \n- Left/Right/Down arrow: move piece left right or down\n-
     Up arrow: rotate piece\n- c: hold piece\n- space: place piece\n- Mouse/WASD:
-    control camera\n"
+    control camera\n- q: quit game"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
@@ -786,6 +786,8 @@ MonoBehaviour:
   upcomingIds: 
   hold: {fileID: 0}
   current: {fileID: 0}
+  preview: {fileID: 0}
+  spawned: []
 --- !u!1 &1515135300
 GameObject:
   m_ObjectHideFlags: 0
