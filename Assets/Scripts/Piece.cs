@@ -125,39 +125,11 @@ public class Piece : MonoBehaviour
         
     }
 
-    private void rotateTetromino(float angle) {
-        
-        removePiece(); 
-        transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
-        Vector3[] kicks;
-        if (this.id == 6){
-            kicks = iWallKicks[this.numRotations];
-        }else {
-            kicks = jlstzWallKicks[this.numRotations];
-        }
-
-        bool canMove = false; 
-        
-        foreach (Vector3 kick in kicks) {
-            if (checkBoardPosition(kick)) {
-                transform.localPosition += kick; 
-                movePiece(); 
-                canMove = true; 
-                break; 
-            }
-        }
-
-        if (!canMove) {
-            transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
-        }
-    }
-
     private void rotateTetrominoAndShadow(float angle) {
         removePiece(); 
         transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
         Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
         shadowPieceObj.transform.RotateAround(shadowPieceObj.transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
-
         
         Vector3[] kicks;
         if (this.id == 6){
