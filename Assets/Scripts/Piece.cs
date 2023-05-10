@@ -19,6 +19,23 @@ public class Piece : MonoBehaviour
     public float das; 
     public float timePassed;
     public float totalTimePassed; 
+
+    public int numRotations; 
+
+    public Dictionary<int, Vector3[]> jlstzWallKicks = new Dictionary<int, Vector3[]>() {
+        {1, new Vector3[]{new Vector3(0, 0, 0), new Vector3(-1, 0, 0), new Vector3(-1, 1, 0), new Vector3(0, -2, 0), new Vector3(-1, -2, 0)}},
+        {2, new Vector3[]{new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, -1, 0), new Vector3(0, 2, 0), new Vector3(1, 2, 0)}},
+        {3, new Vector3[]{new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, -1, 0), new Vector3(0, 2, 0), new Vector3(1, 2, 0)}},
+        {0, new Vector3[]{new Vector3(0, 0, 0), new Vector3(-1, 0, 0), new Vector3(-1, 1, 0), new Vector3(0, -2, 0), new Vector3(-1, -2, 0)}}
+    };
+
+    public Dictionary<int, Vector3[]> iWallKicks = new Dictionary<int, Vector3[]>() {
+        {1, new Vector3[]{new Vector3(0, 0, 0), new Vector3(-2, 0, 0), new Vector3(1, 0, 0), new Vector3(-2, -1, 0), new Vector3(1, 2, 0)}},
+        {2, new Vector3[]{new Vector3(0, 0, 0), new Vector3(2, 0, 0), new Vector3(-1, 0, 0), new Vector3(2, 1, 0), new Vector3(-1, -2, 0)}},
+        {3, new Vector3[]{new Vector3(0, 0, 0), new Vector3(-1, 0, 0), new Vector3(2, 0, 0), new Vector3(-1, 2, 0), new Vector3(2, -1, 0)}},
+        {0, new Vector3[]{new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(-2, 0, 0), new Vector3(1, -2, 0), new Vector3(-2, 1, 0)}}
+    };
+
     public Vector2 roundPosition(Vector2 pos) {
         return new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
     }
@@ -51,31 +68,17 @@ public class Piece : MonoBehaviour
     public void moveToBottom(){
         // I don't know why this works and a while loop doesn't
         for(int i=0;i<22;i++){
-            moveTetromino(new Vector3(0, -1, 0));
-        }
-    }
-    public void movePiece() {
-        TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
-        for (int i = 0; i < 22; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (isOwned(board, i, j)) {
-                    board.grid[i, j] = null; 
-                }
-            }
-        }
-        foreach (Transform child in transform) {
-            Vector2 pos = child.position; 
-            pos = new Vector2(pos.x + 4.5f, pos.y); 
-            pos = roundPosition(pos);
-            board.grid[(int) pos.y, (int) pos.x] = child; 
+            moveTetromino(DOWN);
         }
     }
 
     public void movePieceDown() {
         if (checkBoardPosition(DOWN)) {
-            transform.localPosition += new Vector3(0, -1, 0);
+            removePiece();
+            transform.localPosition += DOWN;
             movePiece();
         } else {
+            removePiece();
             movePiece(); 
             Lock();
         }
@@ -83,6 +86,7 @@ public class Piece : MonoBehaviour
 
     private void moveTetromino(Vector3 direction) {
         if (checkBoardPosition(direction)) {
+            removePiece();
             transform.localPosition += direction;
             movePiece();
         } 
@@ -91,38 +95,89 @@ public class Piece : MonoBehaviour
     private void moveTetrominoAndShadow(Vector3 direction) {
 
         if (checkBoardPosition(direction)) {
+            removePiece();
             transform.localPosition += direction;
             Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
             shadowPieceObj.transform.localPosition += direction;
             movePiece();
         } 
-        // else {
-        //     transform.localPosition -= direction;
-        //     shadowPieceObj.transform.localPosition -= direction;
-        // }
+    }
+
+    private void movePiece() {
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
+        foreach (Transform child in transform) {
+            Vector2 pos = child.position; 
+            pos = new Vector2(pos.x + 4.5f, pos.y); 
+            pos = roundPosition(pos);
+            board.grid[(int) pos.y, (int) pos.x] = child; 
+        }
+    }
+
+    private void removePiece() {
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
+
+        foreach (Transform child in transform) {
+            Vector2 pos = child.position; 
+            pos = new Vector2(pos.x + 4.5f, pos.y); 
+            pos = roundPosition(pos);
+            board.grid[(int) pos.y, (int) pos.x] = null; 
+        }
+        
     }
 
     private void rotateTetromino(float angle) {
+        
+        removePiece(); 
         transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
+        Vector3[] kicks;
+        if (this.id == 6){
+            kicks = iWallKicks[this.numRotations];
+        }else {
+            kicks = jlstzWallKicks[this.numRotations];
+        }
 
-        // transform.Rotate(new Vector3(0, 0, angle));
-        if (checkBoardPosition(new Vector3(0, 0, 0))) {
-            movePiece();
-        } else {
+        bool canMove = false; 
+        
+        foreach (Vector3 kick in kicks) {
+            if (checkBoardPosition(kick)) {
+                transform.localPosition += kick; 
+                movePiece(); 
+                canMove = true; 
+                break; 
+            }
+        }
+
+        if (!canMove) {
             transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
         }
     }
 
     private void rotateTetrominoAndShadow(float angle) {
+        removePiece(); 
         transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
         Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
         shadowPieceObj.transform.RotateAround(shadowPieceObj.transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
 
+        
+        Vector3[] kicks;
+        if (this.id == 6){
+            kicks = iWallKicks[this.numRotations];
+        }else {
+            kicks = jlstzWallKicks[this.numRotations];
+        }
 
-        // transform.Rotate(new Vector3(0, 0, angle));
-        if (checkBoardPosition(new Vector3(0, 0, 0))) {
-            movePiece();
-        } else {
+        bool canMove = false; 
+        
+        foreach (Vector3 kick in kicks) {
+            if (checkBoardPosition(kick)) {
+                transform.localPosition += kick; 
+                movePiece(); 
+                canMove = true; 
+                break; 
+            }
+        }
+
+        if (!canMove) {
             transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
             shadowPieceObj.transform.RotateAround(shadowPieceObj.transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
         }
@@ -153,6 +208,7 @@ public class Piece : MonoBehaviour
         this.das = 0.15f; 
         this.timePassed = 0f; 
         this.totalTimePassed = 0f; 
+        this.numRotations = 0; 
         this.tb = GameObject.Find("TetrisBoard");
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
 
@@ -203,8 +259,9 @@ public class Piece : MonoBehaviour
             timePassed = 0f;
         } 
         
-        if (Input.GetKeyDown(KeyCode.UpArrow)) {
-            rotateTetrominoAndShadow(90);
+        if (Input.GetKeyDown(KeyCode.UpArrow) && this.id != 3) {
+            this.numRotations = (numRotations + 1) % 4; 
+            rotateTetrominoAndShadow(-90);
             updateOutlineTetromino();
         } 
         
