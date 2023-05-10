@@ -36,8 +36,9 @@
             <span class="italics bold">clears</span> the row of blocks, bringing
             every other block above it down a row. If the stack of blocks reach
             the very top, the game ends. Furthermore, as more lines are cleared,
-            the game is sped up. The goal, therefore, is to clear as many rows
-            before the stack reaches the top of the board.
+            the pieces fall at an increasingly faster rate. The goal, therefore,
+            is to clear as many rows before the stack reaches the top of the
+            board.
           </p>
           <h3>Tetrominoes</h3>
           <p>
@@ -84,7 +85,7 @@
               of the four constituent blocks.
             </li>
           </ul>
-          <div class="captaioned-image">
+          <div class="captioned-image">
             <img
               class="image"
               style="width: 40%"
@@ -101,7 +102,7 @@
             the I piece we chose a block close to the center as the rotation
             point.
           </p>
-          <div class="captaioned-image">
+          <div class="captioned-image">
             <img
               class="image"
               style="width: 50%"
@@ -125,14 +126,14 @@
             capabilities. More details will be outlined below.
           </p>
           <h1>Unity Implementation (the fun stuff)</h1>
-          <div class="captaioned-image">
+          <div class="captioned-image">
             <img class="image" style="width: 90%" src="html_images/board.png" />
             <p class="italics">Our beautiful board.</p>
           </div>
           <h2>Board Design</h2>
           <p>
             Board design is fairly simple. In the center we drew a 10x20 grid
-            outlined by 3D cubes. On the top left, we outline a square meant to
+            outlined by 3D cubes. On the top left, we outlined a square meant to
             display the "held" piece (will outline in a later section). During
             actual game play, the right part of the screen is filled with the
             next 5 upcoming pieces, allowing players to plan ahead their stacks.
@@ -146,7 +147,7 @@
           <pre><code class="language-csharp">public Transform[,] grid = new Transform[h, w]; 
 </code></pre>
           <p>
-            Using this array representation is useful, as it simplifies our
+            Using this array representation is helpful, as it simplifies our
             workflow considerably. Therefore, for each frame, we perform the
             following:
           </p>
@@ -189,40 +190,141 @@
             then moving all rows above the filled row down by one position,
             shifting each cube down by 1 on the y-axis.
           </p>
-          <h2>Piece Movement</h2>
-          <p></p>
-          <h2>Upcoming Pieces</h2>
           <h2>Piece Spawning</h2>
-          <pre><code class="language-csharp">public void spawnTetrominoe(
-            bool first, 
-            GameObject spawn, 
-            int id, 
-            bool drawUpcomingPiece
-          ) {
-
-  if (spawn == null) {
-      if (first) {
-          var (piece, index) = getRandomPiece(); 
-          spawn = piece; 
-          id = index; 
-      } else {
-          spawn = this.upcoming[0]; 
-          id = this.upcomingIds[0];
-      }
-  }
-
-  Debug.Log("Spawning: " + spawn); 
-  this.current = instantiatePiece(spawn, 
-                                  true, 
-                                  new Vector3(-0.5f, 18, 0), id);
-  if (drawUpcomingPiece) drawUpcoming(false);
-
-}</code></pre>
 
           <p>
             Within <code>TetrisBoard.cs</code>, we have the function
             <code>spawnTetrominoe()</code> that's
           </p>
+          <h2>Piece Movement</h2>
+          <p>
+            Within the <code>Update()</code> function of <code>Piece.cs</code>,
+            we have listeners for each of the arrow keys for left, right, down
+            movement, as well as piece rotation.
+          </p>
+          <div class="captioned-image">
+            <pre><code class="language-csharp">if (Input.GetKeyDown(KeyCode.RightArrow)) {
+    totalTimePassed = 0;
+    Debug.Log(Time.deltaTime);
+    moveTetromino(new Vector3(1, 0, 0));
+}</code></pre>
+            <p class="italics">
+              An example key listener, which calls another helper function to
+              move the piece.
+            </p>
+          </div>
+          <p>
+            Piece rotation is performed by doing a simple 90 degree rotation on
+            the z-axis around the first child of the tetrominio.
+          </p>
+          <pre><code class="language-csharp">transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
+</code></pre>
+          <h3>DAS and ARR</h3>
+          <p>
+            DAS and ARR are implemented by keeping track of the time in which a
+            key is pressed. For DAS, we record the total time passed since a key
+            is pressed in a helper variable, setting the counter to 0 upon
+            initial press. When that time passes a set value, another condition
+            is triggered that calls <code>Input.GetKey()</code>. ARR is then set
+            by keeping track of the total time passed when the key is held down.
+            When the time passes a set ARR value, we continue moving the piece,
+            resetting the time value to 0. Altogether, our DAS and ARR
+            implementation results in the following:
+          </p>
+          <div class="captioned-image">
+            <pre><code class="language-csharp">public float arr;
+public float das; </code></pre>
+            <p class="italics">
+              The lower the ARR the faster the repeat rate. The lower the DAS
+              the higher the delay before repeating.
+            </p>
+          </div>
+          <div class="captioned-image">
+            <pre><code class="language-csharp">timePassed += Time.deltaTime;
+totalTimePassed += Time.deltaTime;
+if (Input.GetKey(KeyCode.LeftArrow) && 
+    timePassed >= arr && 
+    totalTimePassed >= das) {
+    moveTetromino(new Vector3(-1, 0, 0));
+    timePassed = 0f;
+}  </code></pre>
+            <p class="italics">
+              ARR is required to limit the rate that GetKey() is triggered.
+            </p>
+          </div>
+          <h2>Upcoming Pieces</h2>
+          <p>
+            Upcoming pieces are stored in an array of GameObjects, and are
+            updated each time a new piece is spawned. Each piece within the
+            array is then drawn on the right side of the board. When a new piece
+            is spawned, we take the first piece in the array and instantiate
+            that piece to the board. We then translate the rest of the upcoming
+            pieces up the y-axis and then generate a random piece to replace the
+            last slot.
+          </p>
+          <div class="captioned-image">
+            <img class="image" src="html_images/upcoming.png" />
+            <p>The board with upcoming pieces on the right</p>
+          </div>
+          <h2>Holding Pieces</h2>
+          <p></p>
+          <h1>External Resources</h1>
+          The following resources were used for the creation of this project:
+          <ul>
+            <li>
+              Unity Tutorials: A lot of the learning process came from the Unity
+              beginner tutorials, which helped us navigate the editor, how to
+              draw items on the scene, and how to organize scripts and objects.
+            </li>
+            <li>
+              Tetris Tutorials:
+              <ul>
+                <li>
+                  <a
+                    href="https://ghost-together.medium.com/tetris-turns-35-cfcf04c4f2bb"
+                    >https://ghost-together.medium.com/tetris-turns-35-cfcf04c4f2bb</a
+                  >: Depicts a way to make Tetris in javascript. This tutorial
+                  gave us the inspiration of how to implement movement in a game
+                  enviornment.
+                </li>
+                <li>
+                  <a href="https://noobtuts.com/unity/2d-tetris-game"
+                    >https://noobtuts.com/unity/2d-tetris-game</a
+                  >: A tutorial on how to make 2D tetris in Unity. We used this
+                  mostly to help us with the object representation (grid of
+                  Transforms) and how to integrate scripts with the pieces and
+                  board. Here are the ideas that we took from this tutorial:
+                  <ul>
+                    <li>
+                      Representing the grid as a 2D array of Transform objects
+                    </li>
+                    <li>
+                      Checking if the piece is in a valid grid position by
+                      checking the parent of the block
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="https://tetris.wiki/Tetris.wiki"
+                    >https://tetris.wiki/Tetris.wiki</a
+                  >: The Tetris wiki. Mainly to help with piece design,
+                  rotation, and movement.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Other code examples:
+              <ul>
+                <li>
+                  Mouse camera movement:
+                  <a
+                    href="https://gist.github.com/KarlRamstedt/407d50725c7b6abeaf43aee802fdd88e"
+                    >https://gist.github.com/KarlRamstedt/407d50725c7b6abeaf43aee802fdd88e</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
     </main>

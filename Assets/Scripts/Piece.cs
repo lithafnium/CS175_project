@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
+
+    public Vector3 LEFT = new Vector3(-1, 0, 0); 
+    public Vector3 RIGHT = new Vector3(1, 0, 0); 
+    public Vector3 DOWN = new Vector3(0, -1, 0); 
+
     public GameObject tb; 
     public GameObject shadow;
     float lastFall = 0;
     public bool isGamePiece; 
     public int id; 
 
-    public float arr;  // 1 second
+    public float arr;
     public float das; 
     public float timePassed;
     public float totalTimePassed; 
@@ -28,12 +33,13 @@ public class Piece : MonoBehaviour
                     board.grid[i, j].parent == transform;
     }
 
-    public bool checkBoardPosition() {
+    public bool checkBoardPosition(Vector3 direction) {
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
         foreach (Transform child in transform) {
             Vector2 pos = child.position; 
+            pos += new Vector2(direction.x, direction.y); 
             pos = new Vector2(pos.x + 4.5f, pos.y); 
-            pos = roundPosition(pos); 
+            pos = roundPosition(pos);  
             if (!board.insideGrid(pos) || isOccupied(board, pos)) {
                 return false; 
             }
@@ -44,13 +50,13 @@ public class Piece : MonoBehaviour
 
     public void moveToBottom(){
         // I don't know why this works and a while loop doesn't
-        for(int i=0;i<20;i++){
+        for(int i=0;i<22;i++){
             moveTetromino(new Vector3(0, -1, 0));
         }
     }
     public void movePiece() {
         TetrisBoard board = this.tb.GetComponent<TetrisBoard>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 22; i++) {
             for (int j = 0; j < 10; j++) {
                 if (isOwned(board, i, j)) {
                     board.grid[i, j] = null; 
@@ -66,44 +72,41 @@ public class Piece : MonoBehaviour
     }
 
     public void movePieceDown() {
-        transform.localPosition += new Vector3(0, -1, 0);
-        if (checkBoardPosition()) {
-            // Debug.Log("CALLING UPDATE"); 
+        if (checkBoardPosition(DOWN)) {
+            transform.localPosition += new Vector3(0, -1, 0);
             movePiece();
         } else {
-            transform.localPosition += new Vector3(0, 1, 0);
-            
+            movePiece(); 
             Lock();
         }
     }
 
     private void moveTetromino(Vector3 direction) {
-        transform.localPosition += direction;
-        if (checkBoardPosition()) {
+        if (checkBoardPosition(direction)) {
+            transform.localPosition += direction;
             movePiece();
-        } else {
-            transform.localPosition -= direction;
-        }
+        } 
     }
 
     private void moveTetrominoAndShadow(Vector3 direction) {
-        transform.localPosition += direction;
-        Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
-        shadowPieceObj.transform.localPosition += direction;
 
-        if (checkBoardPosition()) {
+        if (checkBoardPosition(direction)) {
+            transform.localPosition += direction;
+            Piece shadowPieceObj = this.shadow.GetComponent<Piece>(); 
+            shadowPieceObj.transform.localPosition += direction;
             movePiece();
-        } else {
-            transform.localPosition -= direction;
-            shadowPieceObj.transform.localPosition -= direction;
-        }
+        } 
+        // else {
+        //     transform.localPosition -= direction;
+        //     shadowPieceObj.transform.localPosition -= direction;
+        // }
     }
 
     private void rotateTetromino(float angle) {
         transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), angle);
 
         // transform.Rotate(new Vector3(0, 0, angle));
-        if (checkBoardPosition()) {
+        if (checkBoardPosition(new Vector3(0, 0, 0))) {
             movePiece();
         } else {
             transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
@@ -117,7 +120,7 @@ public class Piece : MonoBehaviour
 
 
         // transform.Rotate(new Vector3(0, 0, angle));
-        if (checkBoardPosition()) {
+        if (checkBoardPosition(new Vector3(0, 0, 0))) {
             movePiece();
         } else {
             transform.RotateAround(transform.GetChild(0).position, new Vector3(0, 0, 1), -angle);
@@ -145,11 +148,21 @@ public class Piece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         this.arr = 0.025f; 
-        this.das = 0.25f; 
+        this.das = 0.15f; 
         this.timePassed = 0f; 
         this.totalTimePassed = 0f; 
         this.tb = GameObject.Find("TetrisBoard");
+        TetrisBoard board = this.tb.GetComponent<TetrisBoard>(); // Getting the rigidbody from the player.
+
+        if (this.isGamePiece){
+            if (!checkBoardPosition(new Vector3(0, 0, 0))) {
+                Debug.Log("GAME OVER");
+                this.enabled = false;
+                this.isGamePiece = false;
+            }
+        }
     }
 
     void Lock()
@@ -171,10 +184,10 @@ public class Piece : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow)) {
             totalTimePassed = 0;
-            moveTetrominoAndShadow(new Vector3(-1, 0, 0));
+            moveTetrominoAndShadow(LEFT);
             updateOutlineTetromino();
         } else if (Input.GetKey(KeyCode.LeftArrow) && timePassed >= arr && totalTimePassed >= das) {
-            moveTetrominoAndShadow(new Vector3(-1, 0, 0));
+            moveTetrominoAndShadow(LEFT);
             updateOutlineTetromino();
             timePassed = 0f;
         } 
@@ -182,15 +195,14 @@ public class Piece : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow)) {
             totalTimePassed = 0;
             Debug.Log(Time.deltaTime);
-            moveTetrominoAndShadow(new Vector3(1, 0, 0));
+            moveTetrominoAndShadow(RIGHT);
             updateOutlineTetromino();
         } else if (Input.GetKey(KeyCode.RightArrow) && timePassed >= arr && totalTimePassed >= das) {
-            moveTetrominoAndShadow(new Vector3(1, 0, 0));
+            moveTetrominoAndShadow(RIGHT);
             updateOutlineTetromino();
             timePassed = 0f;
         } 
         
-        // hi
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
             rotateTetrominoAndShadow(90);
             updateOutlineTetromino();
@@ -211,8 +223,6 @@ public class Piece : MonoBehaviour
             moveToBottom();
             movePiece();
             Lock();
-            
-
         } 
 
         if (Input.GetKeyUp(KeyCode.LeftArrow) ||
